@@ -5,28 +5,27 @@ import {
 export default createStore({
   state: {
     new_todo: '',
-    todos: [{ // массив тудушек
-        todo: 'Тутшка какая-то',
-        complete: false
-      },
-      {
-        todo: 'Тудушка какая-то 2',
-        complete: false
-      },
-      {
-        todo: 'Тудушка какая-то 3',
-        complete: true
-      },
-    ]
+    all_time_todos: 0,
+    todos: []
   },
   mutations: {
     change_new_todo(state) {
       return state.new_todo
     },
+    deleteCompleted(state) {
+      for (let i = state.todos.length - 1; i >= 0; i--)
+        if (state.todos[i].complete) {
+          state.todos.splice(i, 1)
+        }
+    },
+    deleteAll(state) {
+      state.todos = []
+    },
     addTodo(state) {
       if (state.new_todo === '') {
         return
       }
+      state.all_time_todos += 1
       state.todos.push({
         todo: state.new_todo,
         complete: false
@@ -51,6 +50,17 @@ export default createStore({
     },
     TODOS_ACTIVE(state) {
       return state.todos.filter(el => !el.completed)
+    },
+    ALL_TIME_TODOS_COUNT(state) {
+      let todoSpell = ''
+      if (state.all_time_todos === 1) {
+        todoSpell = 'дело'
+      } else if (state.all_time_todos <= 4) {
+        todoSpell = 'дела'
+      } else {
+        todoSpell = 'дел'
+      }
+      return state.all_time_todos === 0 ? 'Добавьте cвое первое дело.' : `Всего было записано ${state.all_time_todos} ${todoSpell}`
     },
     TODOS_LEFT(state) {
       let todoSpell = ''

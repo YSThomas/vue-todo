@@ -6,10 +6,16 @@
       <button type="submit" name="button">Add</button>
     </form>
 
-    <div class="todo-item" v-for="(todo, index) in $store.getters.TODOS" @dblclick='$store.commit("deleteTodo", index)' @click.ctrl="$store.commit('markTaskComplete', index)" >
-      <h3>{{index + 1}}: {{ todo.todo }}</h3>
-      <small v-if='todo.complete'>v</small>
-      <small v-else>x</small>
+    <div class="todos-section">
+      <div class="no-todos" v-if="!$store.state.todos.length">
+        <span>Дел нет.</span>
+      </div>
+      <div v-else class="todo-item" v-for="(todo, index) in $store.getters.TODOS">
+        <span :class='{completed: todo.complete}' @dblclick='$store.commit("deleteTodo", index)' @click.ctrl="$store.commit('markTaskComplete', index)">{{ todo.todo }}</span>
+        <br>
+        <small v-if='todo.complete'>V</small>
+        <small v-else>X</small>
+      </div>
     </div>
   </div>
 </template>
@@ -43,5 +49,37 @@ a {
 }
 form{
   padding: 1rem 0;
+}
+
+div.todo-item span{
+  cursor: pointer;
+  font-weight: bold;
+}
+
+div.todo-item{
+  height: 5rem;
+  width: auto;
+}
+
+.no-todos{
+  font-weight: bold;
+  color: #eeeee;
+  opacity: 30%;
+  user-select: none;
+}
+
+.completed{
+  text-decoration: line-through;
+  color: #42b983;
+  transition: all 0.5s ease-out;
+}
+
+.completed::before{
+  content: 'Выполнено';
+  color: black;
+  opacity: 30%;
+  width: 5px;
+  height: 5px;
+  background-color: #42b983;
 }
 </style>
