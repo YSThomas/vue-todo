@@ -5,8 +5,8 @@ import {
 export default createStore({
   state: {
     new_todo: '',
-    all_time_todos: 0,
-    todos: []
+    all_time_todos: JSON.parse(localStorage.getItem('all_time_todos')) || 0,
+    todos: JSON.parse(localStorage.getItem('storage-vuex')) || []
   },
   mutations: {
     change_new_todo(state) {
@@ -22,11 +22,13 @@ export default createStore({
       state.todos = []
     },
     addTodo(state) {
-      if (state.new_todo === '') {
+      state.new_todo = state.new_todo.trim()
+      if (state.new_todo.length <= 5) {
         return
       }
       state.all_time_todos += 1
       state.todos.push({
+        _id: state.all_time_todos,
         todo: state.new_todo,
         complete: false
       })
