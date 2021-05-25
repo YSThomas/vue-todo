@@ -4,76 +4,95 @@ import {
 
 export default createStore({
   state: {
-    new_todo: '',
     all_time_todos: JSON.parse(localStorage.getItem('all_time_todos')) || 0,
     todos: JSON.parse(localStorage.getItem('storage-vuex')) || []
   },
-  mutations: {
-    change_new_todo(state) {
-      return state.new_todo
-    },
-    deleteCompleted(state) {
+  mutations: { // ADD_SOMETHING, REMOVE_SOMETHING, SET_SOMETHING
+    REMOVE_COMPLETED_TODOS(state) {
       for (let i = state.todos.length - 1; i >= 0; i--)
         if (state.todos[i].complete) {
           state.todos.splice(i, 1)
         }
     },
-    deleteAll(state) {
+    SET_STORAGE(state) { // сохранение изменений в локальное хранилище
+      localStorage.setItem('all_time_todos', JSON.stringify(state.all_time_todos));
+      localStorage.setItem('storage-vuex', JSON.stringify(state.todos));
+    },
+    REMOVE_ALL_TODOS(state) { // удаление всех записей
       state.todos = []
     },
-    addTodo(state) {
-      state.new_todo = state.new_todo.trim()
-      if (state.new_todo.length <= 5) {
+    ADD_TODO(state, task) { //добавление новой записи
+      task = task.trim()
+      if (task.length <= 5) {
         return
       }
       state.all_time_todos += 1
       state.todos.push({
         _id: state.all_time_todos,
-        todo: state.new_todo,
+        todo: task,
         complete: false
       })
-      state.new_todo = ''
     },
-    deleteTodo(state, index) {
+    REMOVE_TODO(state, id) { // удаление одной записи
+      let index = state.todos.findIndex(todo => todo._id === id)
       state.todos.splice(index, 1)
     },
-    markTaskComplete(state, index) {
+    SET_TASK_COMPLETED(state, id) { // пометить задачу как завершенную/не завершенную
+      let index = state.todos.findIndex(todo => todo._id === id)
       state.todos[index].complete = !state.todos[index].complete
     }
   },
   modules: {},
-  actions: {},
-  getters: {
-    TODOS(state) {
+  actions: {
+    addNewTodo({
+      commit
+    }, task) {
+      commit('ADD_TODO', task)
+
+      commit('SET_STORAGE')
+    },
+    deleteTodo({ //удаление тудушки
+      commit
+    }, id) {
+      commit('REMOVE_TODO', id)
+
+      commit('SET_STORAGE')
+    },
+    deleteAllTodos({
+      commit
+    }) {
+      commit('REMOVE_ALL_TODOS')
+
+      commit('SET_STORAGE')
+    },
+    taskComplete({
+      commit
+    }, id) {
+      commit('SET_TASK_COMPLETED', id)
+
+      commit('SET_STORAGE')
+    },
+    deleteAllCompleted({
+      commit
+    }) {
+      commit('REMOVE_COMPLETED_TODOS')
+    }
+  },
+  getters: { // getSomething, isSomething
+    getTodos(state) {
       return state.todos
     },
-    TODOS_COMPLETED(state) {
-      return state.todos.filter(el => el.completed)
+    getTodosCompleted(state) {
+      return state.todos.filter(el => el.complete)
     },
-    TODOS_ACTIVE(state) {
-      return state.todos.filter(el => !el.completed)
+    getTodosActive(state) {
+      return state.todos.filter(el => !el.complete)
     },
-    ALL_TIME_TODOS_COUNT(state) {
-      let todoSpell = ''
-      if (state.all_time_todos === 1) {
-        todoSpell = 'дело'
-      } else if (state.all_time_todos <= 4) {
-        todoSpell = 'дела'
-      } else {
-        todoSpell = 'дел'
-      }
-      return state.all_time_todos === 0 ? 'Добавьте cвое первое дело.' : `Всего было записано ${state.all_time_todos} ${todoSpell}`
+    getAllTimeTodosCount(state) {
+      return state.all_time_todos === 0 ? 'Добавьте cвое первое дело.' : `Было записей всего: ${state.all_time_todos}`
     },
-    TODOS_LEFT(state) {
-      let todoSpell = ''
-      if (state.todos.length === 1) {
-        todoSpell = 'дело'
-      } else if (state.todos.length <= 4) {
-        todoSpell = 'дела'
-      } else {
-        todoSpell = 'дел'
-      }
-      return state.todos === 0 ? 'Либо дела все сделаны, либо не назначены! Добавьте новое дело.' : `Осталось ${state.todos.length} ${todoSpell}`
+    todosLeft(state) {
+      return state.todos === 0 ? 'Либо дела все сделаны, либо не назначены! Добавьте новое дело.' : `Дел осталось: ${state.todos.length}`
     }
   }
 })
