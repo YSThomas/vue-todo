@@ -1,6 +1,6 @@
 <template>
   <TodoStats />
-  <div onmouseup="return false" onselectstart="return false" class="todos" @onhashchange='onHashChange()'>
+  <div onmouseup="return false" onselectstart="return false" class="todos">
     <form @submit.prevent='addTodo()'>
       <small style="color: red; font-weight: bold; opacity: 30%;" v-show="new_todo.length <= 5">Помните: Дело должно содержать 6 и более символов!</small><br>
       <input autocomplete="off" type="text" name="newTodo" v-model="new_todo">
@@ -10,17 +10,17 @@
     <!-- Тут попробую сделать фильтры -->
     <ul v-show='getTodos.length' class="filters">
           <li>
-            <a href="#/all" :class="{ selected: visibility == 'all' }">Все</a>
+            <a href="#/all" :class="{ selected: getVisibility == 'all' || getVisibility == ''}">Все</a>
           </li>
           <li>
-            <a href="#/active" :class="{ selected: visibility == 'active' }"
+            <a href="#/active" :class="{ selected: getVisibility == 'active' }"
               >Активные</a
             >
           </li>
           <li>
             <a
               href="#/completed"
-              :class="{ selected: visibility == 'completed' }"
+              :class="{ selected: getVisibility == 'completed' }"
               >Выполненные</a
             >
           </li>
@@ -31,11 +31,11 @@
         <span>Дел нет.</span>
       </div>
 
-      <div v-else-if="visibility === 'active' " class="todo-item" v-for="(todo, index) in getTodosActive">
+      <div v-else-if="getVisibility === 'active' " class="todo-item" v-for="(todo, index) in getTodosActive">
         <span :class='{completed: todo.complete}' :key='todo._id' @dblclick='deleteTodo(todo._id)' @click.ctrl="taskComplete(todo._id)">{{ todo.todo }}</span>
       </div>
 
-      <div v-else-if="visibility === 'completed' " class="todo-item" v-for="(todo, index) in getTodosCompleted">
+      <div v-else-if="getVisibility === 'completed' " class="todo-item" v-for="(todo, index) in getTodosCompleted">
         <span :class='{completed: todo.complete}' :key='todo._id' @dblclick='deleteTodo(todo._id)' @click.ctrl="taskComplete(todo._id)">{{ todo.todo }}</span>
       </div>
 
@@ -49,7 +49,7 @@
 
 <script>
 import TodoStats from './TodoStats.vue'
-import { mapState, mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'TodosMain',
@@ -59,14 +59,13 @@ export default {
   data: function () {
     return {
       new_todo: '',
-      visibility: window.location.hash.replace(/#\/?/, "") || 'all'
     }
   },
   computed:{
-    ...mapGetters(['getTodos', 'getTodosCompleted', 'getTodosActive']),
+    ...mapGetters(['getTodos', 'getTodosCompleted', 'getTodosActive', 'getVisibility']),
   },
   methods:{
-    ...mapActions(['addNewTodo', 'deleteTodo', 'taskComplete']),
+    ...mapActions(['addNewTodo', 'deleteTodo', 'taskComplete', 'setVisibility']),
 
     addTodo(){
       this.addNewTodo(this.new_todo)
@@ -76,9 +75,7 @@ export default {
     }
   },
   created: function(){
-    window.addEventListener('hashchange', ()=>{
-      this.visibility = window.location.hash.replace(/#\/?/, "")
-    })
+    window.addEventListener('hashchange', this.setVisibility)
   }
 }
 

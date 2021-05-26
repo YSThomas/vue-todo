@@ -5,14 +5,15 @@ import {
 export default createStore({
   state: {
     all_time_todos: JSON.parse(localStorage.getItem('all_time_todos')) || 0,
-    todos: JSON.parse(localStorage.getItem('storage-vuex')) || []
+    todos: JSON.parse(localStorage.getItem('storage-vuex')) || [],
+    visibility: ''
   },
   mutations: { // ADD_SOMETHING, REMOVE_SOMETHING, SET_SOMETHING
-    REMOVE_COMPLETED_TODOS(state) {
-      for (let i = state.todos.length - 1; i >= 0; i--)
-        if (state.todos[i].complete) {
-          state.todos.splice(i, 1)
-        }
+    SET_VISIBILITY(state, hash) {
+      state.visibility = hash
+    },
+    REMOVE_COMPLETED_TODOS(state, array) {
+      state.todos = array
     },
     SET_STORAGE(state) { // сохранение изменений в локальное хранилище
       localStorage.setItem('all_time_todos', JSON.stringify(state.all_time_todos));
@@ -44,6 +45,11 @@ export default createStore({
   },
   modules: {},
   actions: {
+    setVisibility({
+      commit
+    }) {
+      commit('SET_VISIBILITY', window.location.hash.replace(/#\/?/, "") || 'all')
+    },
     addNewTodo({
       commit
     }, task) {
@@ -73,14 +79,19 @@ export default createStore({
       commit('SET_STORAGE')
     },
     deleteAllCompleted({
-      commit
+      commit,
+      state
     }) {
-      commit('REMOVE_COMPLETED_TODOS')
+      let array = state.todos.filter(el => !el.complete)
+      commit('REMOVE_COMPLETED_TODOS', array)
 
       commit('SET_STORAGE')
     }
   },
   getters: { // getSomething, isSomething
+    getVisibility(state) {
+      return state.visibility
+    },
     getTodos(state) {
       return state.todos
     },
