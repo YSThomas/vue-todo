@@ -76,6 +76,8 @@ export default createStore({
       commit
     }) {
       commit('REMOVE_COMPLETED_TODOS')
+
+      commit('SET_STORAGE')
     }
   },
   getters: { // getSomething, isSomething

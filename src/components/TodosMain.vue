@@ -8,9 +8,7 @@
     </form>
 
     <!-- Тут попробую сделать фильтры -->
-    <h5>{{visibility}}</h5>
-
-    <ul class="filters">
+    <ul v-show='getTodos.length' class="filters">
           <li>
             <a href="#/all" :class="{ selected: visibility == 'all' }">Все</a>
           </li>
@@ -75,13 +73,7 @@ export default {
       if(this.new_todo.length > 5){
         this.new_todo = ''
       }
-    },
-    // delTodo(id){
-    //   this.deleteTodo(id)
-    // },
-    // markTaskComplete(id){
-    //   this.taskComplete(id)
-    // }
+    }
   },
   created: function(){
     window.addEventListener('hashchange', ()=>{
@@ -130,7 +122,6 @@ div.todo-item{
 }
 
 .completed{
-  /* text-decoration: line-through; */
   color: #42b983;
   background-color: #abffd9;
   transition: all 0.5s ease-out;
@@ -140,8 +131,6 @@ div.todo-item{
   content: '👌';
   color: black;
   opacity: 30%;
-  /* width: 5px;
-  height: 5px; */
   background-color: #42b983;
 }
 

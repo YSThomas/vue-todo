@@ -22,7 +22,6 @@ import { mapState, mapGetters, mapActions } from 'vuex'
 export default {
   name: 'TodoStats',
   computed:{
-    ...mapState(['todos', 'all_time_todos']),
     ...mapGetters(['todosLeft', 'getTodos', 'getAllTimeTodosCount']),
   },
   methods:{
