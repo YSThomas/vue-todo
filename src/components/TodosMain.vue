@@ -12,18 +12,18 @@
 
     <ul class="filters">
           <li>
-            <a href="#/all" :class="{ selected: visibility == 'all' }">All</a>
+            <a href="#/all" :class="{ selected: visibility == 'all' }">Все</a>
           </li>
           <li>
             <a href="#/active" :class="{ selected: visibility == 'active' }"
-              >Active</a
+              >Активные</a
             >
           </li>
           <li>
             <a
               href="#/completed"
               :class="{ selected: visibility == 'completed' }"
-              >Completed</a
+              >Выполненные</a
             >
           </li>
         </ul>
@@ -33,8 +33,16 @@
         <span>Дел нет.</span>
       </div>
 
+      <div v-else-if="visibility === 'active' " class="todo-item" v-for="(todo, index) in getTodosActive">
+        <span :class='{completed: todo.complete}' :key='todo._id' @dblclick='deleteTodo(todo._id)' @click.ctrl="taskComplete(todo._id)">{{ todo.todo }}</span>
+      </div>
+
+      <div v-else-if="visibility === 'completed' " class="todo-item" v-for="(todo, index) in getTodosCompleted">
+        <span :class='{completed: todo.complete}' :key='todo._id' @dblclick='deleteTodo(todo._id)' @click.ctrl="taskComplete(todo._id)">{{ todo.todo }}</span>
+      </div>
+
       <div v-else class="todo-item" v-for="(todo, index) in getTodos">
-        <span :class='{completed: todo.complete}' :key='todo._id' @dblclick='delTodo(todo._id)' @click.ctrl="markTaskComplete(todo._id)">{{ todo.todo }}</span>
+        <span :class='{completed: todo.complete}' :key='todo._id' @dblclick='deleteTodo(todo._id)' @click.ctrl="taskComplete(todo._id)">{{ todo.todo }}</span>
       </div>
 
     </div>
@@ -53,11 +61,11 @@ export default {
   data: function () {
     return {
       new_todo: '',
-      visibility: window.location.hash.replace(/#\/?/, "") || ''
+      visibility: window.location.hash.replace(/#\/?/, "") || 'all'
     }
   },
   computed:{
-    ...mapGetters(['getTodos', 'getTodosCompleted']),
+    ...mapGetters(['getTodos', 'getTodosCompleted', 'getTodosActive']),
   },
   methods:{
     ...mapActions(['addNewTodo', 'deleteTodo', 'taskComplete']),
@@ -68,12 +76,12 @@ export default {
         this.new_todo = ''
       }
     },
-    delTodo(id){
-      this.deleteTodo(id)
-    },
-    markTaskComplete(id){
-      this.taskComplete(id)
-    }
+    // delTodo(id){
+    //   this.deleteTodo(id)
+    // },
+    // markTaskComplete(id){
+    //   this.taskComplete(id)
+    // }
   },
   created: function(){
     window.addEventListener('hashchange', ()=>{
