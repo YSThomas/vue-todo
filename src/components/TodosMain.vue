@@ -7,6 +7,27 @@
       <button type="submit" name="button">Add</button>
     </form>
 
+    <!-- Тут попробую сделать фильтры -->
+    <h5>{{visibility}}</h5>
+
+    <ul class="filters">
+          <li>
+            <a href="#/all" :class="{ selected: visibility == 'all' }">All</a>
+          </li>
+          <li>
+            <a href="#/active" :class="{ selected: visibility == 'active' }"
+              >Active</a
+            >
+          </li>
+          <li>
+            <a
+              href="#/completed"
+              :class="{ selected: visibility == 'completed' }"
+              >Completed</a
+            >
+          </li>
+        </ul>
+
     <div class="todos-section">
       <div class="no-todos" v-if="!getTodos.length">
         <span>Дел нет.</span>
@@ -31,7 +52,8 @@ export default {
   },
   data: function () {
     return {
-      new_todo: ''
+      new_todo: '',
+      visibility: window.location.hash.replace(/#\/?/, "") || ''
     }
   },
   computed:{
@@ -52,6 +74,11 @@ export default {
     markTaskComplete(id){
       this.taskComplete(id)
     }
+  },
+  created: function(){
+    window.addEventListener('hashchange', ()=>{
+      this.visibility = window.location.hash.replace(/#\/?/, "")
+    })
   }
 }
 
