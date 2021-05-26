@@ -47,8 +47,8 @@ export default createStore({
   actions: {
     setVisibility({
       commit
-    }) {
-      commit('SET_VISIBILITY', window.location.hash.replace(/#\/?/, "") || 'all')
+    }, hash) {
+      commit('SET_VISIBILITY', hash)
     },
     addNewTodo({
       commit

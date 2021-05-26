@@ -10,15 +10,16 @@
     <!-- Тут попробую сделать фильтры -->
     <ul v-show='getTodos.length' class="filters">
           <li>
-            <a href="#/all" :class="{ selected: getVisibility == 'all' || getVisibility == ''}">Все</a>
+            <a @click.prevent="setVisibility('all')" href="#/all" :class="{ selected: getVisibility == 'all' || getVisibility == ''}">Все</a>
           </li>
           <li>
-            <a href="#/active" :class="{ selected: getVisibility == 'active' }"
+            <a @click.prevent="setVisibility('active')" href="#/active" :class="{ selected: getVisibility == 'active' }"
               >Активные</a
             >
           </li>
           <li>
             <a
+              @click.prevent="setVisibility('completed')"
               href="#/completed"
               :class="{ selected: getVisibility == 'completed' }"
               >Выполненные</a
@@ -74,9 +75,6 @@ export default {
       }
     }
   },
-  created: function(){
-    window.addEventListener('hashchange', this.setVisibility)
-  }
 }
 
 </script>
